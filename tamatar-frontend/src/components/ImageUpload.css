@@ -1,0 +1,120 @@
+/* ImageUpload Component Styles */
+
+.image-upload {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.upload-prompt {
+  border: 3px dashed #ff6347;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #fff5f5;
+  transition: all 0.3s ease;
+}
+
+.upload-prompt:hover {
+  background-color: #ffe5e5;
+  border-color: #ff4500;
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 64px;
+  margin-bottom: 10px;
+}
+
+.upload-prompt p {
+  margin: 10px 0 5px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.upload-prompt small {
+  color: #666;
+  font-size: 14px;
+}
+
+.preview-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.image-preview {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: contain;
+  display: block;
+  background-color: #f5f5f5;
+}
+
+.clear-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clear-button:hover {
+  background-color: rgba(255, 0, 0, 1);
+  transform: scale(1.1);
+}
+
+.clear-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.change-button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #ff6347;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.change-button:hover {
+  background-color: #ff4500;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 99, 71, 0.3);
+}
+
+.change-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .upload-prompt {
+    padding: 30px 15px;
+  }
+  
+  .upload-icon {
+    font-size: 48px;
+  }
+  
+  .image-preview {
+    max-height: 300px;
+  }
+}
