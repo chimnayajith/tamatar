@@ -1,0 +1,25 @@
+# dataset (large files)
+dataset/
+
+# python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# virtual environments
+venv/
+.env
+
+# model weights
+*.pt
+*.pth
+*.ckpt
+
+# logs
+*.log
+
+# jupyter
+.ipynb_checkpoints
+
+# macOS
+.DS_Store
