@@ -1,8 +1,9 @@
 import torch
 import torchvision
 from torchvision import transforms
-from torchvision.datasets import ImageFolder
-from torch.utils.data import DataLoader
+from utils.dataset_loader import load_dataset
+from config import EPOCHS, LEARNING_RATE
+import os
 
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
@@ -13,28 +14,38 @@ transform = transforms.Compose([
     )
 ])
 
-dataset = ImageFolder("../dataset", transform=transform)
-loader = DataLoader(dataset, batch_size=8, shuffle=True)
+loader, _, _ = load_dataset(
+    data_path="dataset",
+    batch_size=8,
+    transform=transform,
+    train_ratio=1.0,
+    val_ratio=0.0,
+    test_ratio=0.0
+)
+classes = loader.dataset.dataset.classes
 
-print("Dataset size:", len(dataset))
-print("Classes:", dataset.classes)
+model = torchvision.models.mobilenet_v2(weights=torchvision.models.MobileNet_V2_Weights.DEFAULT)
 
-model = torchvision.models.mobilenet_v2(pretrained=True)
+for param in model.parameters():
+    param.requires_grad = False
 
-num_classes = len(dataset.classes)
-model.classifier[1] = torch.nn.Linear(model.last_channel, num_classes)
+model.classifier[1] = torch.nn.Linear(model.last_channel, len(classes))
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 model = model.to(device)
 
 criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(model.classifier[1].parameters(), lr=LEARNING_RATE)
 
-epochs = 5
+for epoch in range(EPOCHS):
+    print("\n" + "="*30)
+    print(f"Starting epoch {epoch+1}/{EPOCHS}")
+    print("-"*30)
 
-for epoch in range(epochs):
     model.train()
     running_loss = 0.0
+    total = 0
 
     for images, labels in loader:
         images = images.to(device)
@@ -45,12 +56,13 @@ for epoch in range(epochs):
         outputs = model(images)
         loss = criterion(outputs, labels)
 
-        loss.backward()
+        loss.backward() 
         optimizer.step()
 
-        running_loss += loss.item()
+        running_loss += loss.item() * images.size(0)
+        total += labels.size(0)
 
-    print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss/len(loader):.4f}")
+    print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {running_loss/total:.4f}")
 
-torch.save(model.state_dict(), "mobilenet.pth")
-print("Model saved!")
+os.makedirs("checkpoints", exist_ok =True)
+torch.save(model.state_dict(),"checkpoints/mobilenet_tomato.pth")
