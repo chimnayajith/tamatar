@@ -1,26 +1,37 @@
 import torch
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
+from torch.utils.data import random_split, DataLoader
+from torchvision.datasets import ImageFolder
 
-def get_dataloaders(dataset_path, batch_size=8):
+def load_dataset(data_path, batch_size=8, transform=None, train_ratio=0.7, val_ratio=0.2, test_ratio=0.1):
+    """
+    Load and split the dataset into training, validation, and testing sets.
 
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),     # required for CNN
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomRotation(20),
-        transforms.ToTensor()
-    ])
+    Args:
+        data_path (str): Path to the dataset directory.
+        batch_size (int): Batch size for the DataLoader.
+        transform (callable, optional): Transformations to apply to the dataset.
+        train_ratio (float): Proportion of the dataset to use for training.
+        val_ratio (float): Proportion of the dataset to use for validation.
+        test_ratio (float): Proportion of the dataset to use for testing.
 
-    dataset = datasets.ImageFolder(
-        root=dataset_path,
-        transform=transform
-    )
+    Returns:
+        tuple: DataLoaders for training, validation, and testing sets.
+    """
+    # Load the dataset
+    dataset = ImageFolder(data_path, transform=transform)
 
-    dataloader = DataLoader(
-        dataset,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=4
-    )
+    # Calculate split sizes
+    total_size = len(dataset)
+    train_size = int(train_ratio * total_size)
+    val_size = int(val_ratio * total_size)
+    test_size = total_size - train_size - val_size
 
-    return dataloader, dataset.classes
+    # Split the dataset
+    train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size])
+
+    # Create DataLoaders
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, val_loader, test_loader
