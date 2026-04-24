@@ -4,7 +4,7 @@ import torch.optim as optim
 from torchvision import models, transforms
 from utils.dataset_loader import load_dataset
 from config import EPOCHS, LEARNING_RATE
-import numpy as np
+from pathlib import Path
 
 # Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -83,5 +83,9 @@ for epoch in range(EPOCHS):
     print("="*30)
 
 # Save model
-torch.save(model.state_dict(), "resnet18_tomato.pth")
-print("\nModel saved as resnet18_tomato.pth")
+output_dir = Path(__file__).resolve().parents[1] / "checkpoints"
+output_dir.mkdir(parents=True, exist_ok=True)
+save_path = output_dir / "resnet18_tomato.pth"
+
+torch.save(model.state_dict(),  str(save_path))
+print(f"\nModel saved to {save_path}")
