@@ -6,12 +6,14 @@ pkgs.mkShell {
     nodePackages.npm
     python311
     python311Packages.pip
-    cudatoolkit
+    cudaPackages.cudatoolkit
+    cudaPackages.cudnn
     stdenv.cc.cc
   ];
 
   shellHook = ''
-    export LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=/run/opengl-driver/lib:${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH
+
     echo "Node.js development environment loaded"
     echo "Node version: $(node --version)"
     echo "NPM version: $(npm --version)"
