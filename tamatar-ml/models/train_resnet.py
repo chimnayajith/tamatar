@@ -85,35 +85,3 @@ for epoch in range(EPOCHS):
 # Save model
 torch.save(model.state_dict(), "resnet18_tomato.pth")
 print("\nModel saved as resnet18_tomato.pth")
-
-# ========================
-# FEATURE EXTRACTION
-# ========================
-print("\nExtracting features...")
-
-# Convert to feature extractor
-model.fc = nn.Identity()
-model.eval()
-
-X = []
-y = []
-
-with torch.no_grad():
-    for images, labels in train_loader:
-        images = images.to(device)
-
-        features = model(images)  # (batch, 512)
-
-        X.append(features.cpu().numpy())
-        y.append(labels.numpy())
-
-X = np.concatenate(X)
-y = np.concatenate(y)
-
-print("Feature shape:", X.shape)
-
-# Save features
-np.save("resnet_features.npy", X)
-np.save("resnet_labels.npy", y)
-
-print("Features saved!")
