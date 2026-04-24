@@ -1,6 +1,6 @@
 from utils.dataset_loader import get_dataloaders
 
-loader, classes = get_dataloaders("dataset/PlantVillage")
+loader, classes = get_dataloaders("dataset")
 
 print("Classes:", classes)
 
