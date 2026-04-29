@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from django.conf import settings
 from django.core.files.storage import default_storage
+from .ml.predictor import predict_image
 
 ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png']
 
@@ -68,15 +69,30 @@ def predict(request):
     file_path = default_storage.save(os.path.join('temp', safe_name), image)
 
     try:
-        public_url = default_storage.url(file_path)
-    except Exception:
-        public_url = None
+        try:
+            public_url = default_storage.url(file_path)
+        except Exception:
+            public_url = None
 
-    response_data = {
-        "message": "Image uploaded successfully",
-        "file_path": file_path
-    }
-    if public_url:
-        response_data["url"] = public_url
+        full_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
-    return Response(response_data, status=status.HTTP_200_OK)
+        try:
+            prediction = predict_image(full_path)
+        except Exception as e:
+            return Response(
+                {"error": "Internal server error while processing image"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        response_data = {
+            "file_path": file_path,
+            "prediction": prediction
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+    finally:
+        # attempt to remove the temporary file (ignore deletion errors)
+        try:
+            default_storage.delete(file_path)
+        except Exception:
+            pass
