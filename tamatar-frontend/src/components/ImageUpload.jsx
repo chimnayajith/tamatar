@@ -1,95 +1,83 @@
-/**
- * ImageUpload Component
- * Handles image selection from file picker or camera
- * Displays image preview
- */
+import { useState, useRef } from "react";
+import "./ImageUpload.css";
+import imageIcon from "../assets/images.svg";
+import fileIcon from "../assets/file.svg";
+import cameraIcon from "../assets/camera.svg";
+import closeIcon from "../assets/close.svg";
 
-import { useState, useRef } from 'react';
-import './ImageUpload.css';
+const ImageUpload = ({ onImageSelect, image, onClear }) => {
+  const fileRef = useRef(null);
+  const cameraRef = useRef(null);
 
-const ImageUpload = ({ onImageSelect, disabled }) => {
-  const [preview, setPreview] = useState(null);
-  const fileInputRef = useRef(null);
-
-  /**
-   * Handle file selection from input
-   */
-  const handleFileChange = (e) => {
+  const handleFile = (e) => {
     const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-      
-      // Pass file to parent component
+    if (file) {
       onImageSelect(file);
     }
   };
 
-  /**
-   * Trigger file input click
-   */
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  /**
-   * Clear selected image
-   */
-  const handleClear = () => {
-    setPreview(null);
-    onImageSelect(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   return (
-    <div className="image-upload">
-      {/* Hidden file input with camera support */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment" // Enable camera on mobile devices
-        onChange={handleFileChange}
-        disabled={disabled}
-        style={{ display: 'none' }}
-      />
+    <div className="upload-card">
 
-      {/* Image preview or upload button */}
-      {preview ? (
-        <div className="preview-container">
-          <img src={preview} alt="Preview" className="image-preview" />
-          <button 
-            onClick={handleClear} 
-            className="clear-button"
-            disabled={disabled}
-          >
-            ✕ Clear
-          </button>
+      {/* IF IMAGE EXISTS → SHOW PREVIEW */}
+      {image ? (
+        <div className="preview-card">
+          
+          <div className="preview-header">
+            <span>Uploaded Image</span>
+            <button className="close-btn" onClick={onClear}>
+              <img src={closeIcon} alt="close" />
+            </button>
+          </div>
+
+          <div className="preview-image-wrapper">
+            <img
+              src={URL.createObjectURL(image)}
+              alt="preview"
+              className="preview-image"
+            />
+          </div>
+
         </div>
       ) : (
-        <div className="upload-prompt" onClick={handleUploadClick}>
-          <div className="upload-icon">📷</div>
-          <p>Click to upload or take a photo</p>
-          <small>Support for JPG, PNG images</small>
+        <div className="upload-box">
+          <div className="upload-icon">
+            <img src={imageIcon} alt="upload" />
+          </div>
+            <p className="upload-title">Upload Tomato Leaf Photo</p>
+            <p className="upload-subtext">
+              Drag and drop an image here, or select from device
+            </p>
+
+          <input
+            type="file"
+            ref={fileRef}
+            hidden
+            accept="image/*"
+            onChange={handleFile}
+          />
+
+          <input
+            type="file"
+            ref={cameraRef}
+            hidden
+            accept="image/*"
+            capture="environment"
+            onChange={handleFile}
+          />
+
+          <button className="btn primary" onClick={() => fileRef.current.click()}>
+            <img src={fileIcon} alt="file" className="btn-icon" />
+            Choose File
+          </button>
+
+          <button className="btn secondary" onClick={() => cameraRef.current.click()}>
+            <img src={cameraIcon} alt="camera" className="btn-icon" />
+            Take Photo
+          </button>
         </div>
       )}
 
-      {/* Alternative upload button when image is shown */}
-      {preview && (
-        <button 
-          onClick={handleUploadClick} 
-          className="change-button"
-          disabled={disabled}
-        >
-          Change Image
-        </button>
-      )}
     </div>
   );
 };

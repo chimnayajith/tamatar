@@ -1,54 +1,90 @@
-/**
- * ResultDisplay Component
- * Displays the prediction results with disease name and confidence
- */
-
 import './ResultDisplay.css';
 
-const ResultDisplay = ({ result }) => {
+const ResultDisplay = ({ result, onReset }) => {
   if (!result) return null;
 
-  const { disease, confidence } = result;
-  
-  // Determine confidence level for styling
-  const confidenceLevel = confidence >= 0.8 ? 'high' : confidence >= 0.5 ? 'medium' : 'low';
-  
+  console.log(result);
+
+  const { label, confidence, description, actions, severity } = result;
+
+  const isHealthy = severity === "Healthy";
+  const color =
+    severity === "Healthy"
+      ? "green"
+      : severity === "Moderate"
+      ? "orange"
+      : "red";
+
   return (
-    <div className="result-display">
-      <h2>Analysis Result</h2>
-      
-      <div className="result-card">
-        <div className="disease-info">
-          <span className="label">Detected Disease:</span>
-          <h3 className="disease-name">{disease}</h3>
+    <div className="result-card">
+
+      {/* ICON + CONTENT */}
+      <div className="header-row">
+
+        <div className={`icon-box ${color}`}>
+          {isHealthy ? "✓" : "⚠"}
         </div>
-        
-        <div className="confidence-info">
-          <span className="label">Confidence:</span>
-          <div className={`confidence-bar-container ${confidenceLevel}`}>
-            <div 
-              className="confidence-bar" 
-              style={{ width: `${confidence * 100}%` }}
+
+        <div className="header-text">
+
+          {/* TITLE */}
+          <h2 className="disease-title">{label}</h2>
+
+          {/* BADGE */}
+          <span className={`badge ${color}`}>
+            {severity}
+          </span>
+
+          {/* CONFIDENCE */}
+          <p className="confidence-text">
+            Confidence: <b>{confidence}%</b>
+          </p>
+
+          <div className="progress-bar">
+            <div
+              className={`progress ${color}`}
+              style={{ width: `${confidence}%` }}
             />
           </div>
-          <span className="confidence-value">
-            {(confidence * 100).toFixed(1)}%
-          </span>
-        </div>
-        
-        {/* Confidence interpretation */}
-        <div className="confidence-message">
-          {confidence >= 0.8 && (
-            <p className="high">✓ High confidence - Result is reliable</p>
-          )}
-          {confidence >= 0.5 && confidence < 0.8 && (
-            <p className="medium">⚠ Medium confidence - Consider retaking image</p>
-          )}
-          {confidence < 0.5 && (
-            <p className="low">⚠ Low confidence - Please retake with better lighting</p>
-          )}
+
+          {/* DESCRIPTION */}
+          <p className="description">
+            {isHealthy
+              ? "No disease detected. Plant appears healthy."
+              : description}
+          </p>
+
         </div>
       </div>
+
+      <div className="divider"></div>
+
+      {/* ACTIONS */}
+      <div className="actions">
+        <h3>{isHealthy ? "Care Tips" : "Recommended Actions"}</h3>
+
+        <ul>
+          {actions.map((a, i) => (
+            <li key={i}>
+              <span className="step">{i + 1}</span>
+              <span>{a}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* NOTE */}
+      {!isHealthy && (
+        <div className="note">
+          <b>Note:</b> This is an automated analysis. For severe cases consult a plant expert.
+        </div>
+      )}
+
+      {/* BUTTON */}
+      <button className="reset-btn" onClick={onReset}>
+        Analyze Another Tomato Leaf
+      </button>
+
     </div>
   );
 };
