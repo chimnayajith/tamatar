@@ -1,13 +1,10 @@
-/**
- * Main App Component
- * Integrates all components and handles the prediction workflow
- */
-
 import { useState } from 'react';
 import ImageUpload from './components/ImageUpload';
 import ResultDisplay from './components/ResultDisplay';
 import { predictDisease } from './services/api';
+import { diseaseMap } from './data/diseaseData';
 import './App.css';
+import tomatoLogo from "./assets/tomato.png";
 
 function App() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -15,18 +12,12 @@ function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  /**
-   * Handle image selection from ImageUpload component
-   */
   const handleImageSelect = (file) => {
     setSelectedImage(file);
     setResult(null);
     setError(null);
   };
 
-  /**
-   * Submit image for disease prediction
-   */
   const handleSubmit = async () => {
     if (!selectedImage) {
       setError('Please select an image first');
@@ -35,22 +26,42 @@ function App() {
 
     setLoading(true);
     setError(null);
-    setResult(null);
 
     try {
-      // Call API to predict disease
-      const prediction = await predictDisease(selectedImage);
-      setResult(prediction);
+      // 🔥 FAKE API DELAY
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // 🔥 MOCK RESPONSE (like backend would return)
+      const prediction = {
+        class: "Tomato___Late_blight",
+        confidence: 0.973
+      };
+
+      const mapped = diseaseMap[prediction.class] || {
+        label: prediction.class,
+        severity: "Healthy",
+        description: "No disease detected.",
+        actions: [
+          "Continue regular care",
+          "Monitor plant health"
+        ]
+      };
+
+      setResult({
+        label: mapped.label,
+        severity: mapped.severity,
+        description: mapped.description,
+        actions: mapped.actions,
+        confidence: (prediction.confidence * 100).toFixed(1)
+      });
+
     } catch (err) {
-      setError(err.message || 'Failed to analyze image. Please try again.');
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Reset the app to initial state
-   */
   const handleReset = () => {
     setSelectedImage(null);
     setResult(null);
@@ -59,65 +70,60 @@ function App() {
 
   return (
     <div className="app">
+
       {/* Header */}
       <header className="app-header">
-        <h1>🍅 Tamatar</h1>
-        <p>Tomato Leaf Disease Detection</p>
+        <img src={tomatoLogo} alt="tomato" className="logo-img" />
+
+        <h1>Tomato Disease Detector</h1>
+        <p>
+          Upload a photo of your tomato plant leaf for instant disease detection
+        </p>
       </header>
 
-      {/* Main Content */}
       <main className="app-main">
-        {/* Image Upload Component */}
-        <ImageUpload 
-          onImageSelect={handleImageSelect} 
-          disabled={loading}
-        />
+        <div className="main-card">
 
-        {/* Submit Button */}
-        {selectedImage && !result && (
-          <button 
-            className="submit-button"
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner"></span>
-                Analyzing...
-              </>
+          {/* ALWAYS show image if selected */}
+          <ImageUpload
+            onImageSelect={handleImageSelect}
+            image={selectedImage}
+            onClear={handleReset}
+          />
+
+          {/* Show analyze button only before result */}
+          {selectedImage && !result && (
+            loading ? (
+              <div className="loading-box">
+                <span className="loader"></span>
+                  <img src={tomatoLogo} alt="tomato" className="inline-icon" />
+                  Analyzing tomato leaf...
+              </div>
             ) : (
-              'Analyze Image'
-            )}
-          </button>
-        )}
+              <button className="submit-button" onClick={handleSubmit}>
+                Analyze Image
+              </button>
+            )
+          )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="error-message">
-            <span className="error-icon">⚠️</span>
-            <p>{error}</p>
-            <button onClick={() => setError(null)}>Dismiss</button>
-          </div>
-        )}
+          {/* Show result BELOW image */}
+          {result && (
+            <ResultDisplay
+              result={result}
+              onReset={handleReset}
+            />
+          )}
 
-        {/* Result Display */}
-        <ResultDisplay result={result} />
+          {/* Error */}
+          {error && error.trim() !== "" && (
+            <div className="error-message">
+              ⚠️ {error}
+            </div>
+          )}
 
-        {/* Reset Button */}
-        {result && (
-          <button 
-            className="reset-button"
-            onClick={handleReset}
-          >
-            Analyze Another Image
-          </button>
-        )}
+        </div>
       </main>
 
-      {/* Footer */}
-      <footer className="app-footer">
-        <p>Powered by AI • PWA Ready</p>
-      </footer>
     </div>
   );
 }
