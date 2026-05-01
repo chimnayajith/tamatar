@@ -5,6 +5,7 @@ from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 import numpy as np
 from pathlib import Path
+import json
 
 def main():
     # ========================
@@ -37,6 +38,9 @@ def main():
     classes = dataset.classes
     num_classes = len(classes)
 
+    with open(OUTPUT_DIR / "class_mapping.json", "w") as f:
+        json.dump(dataset.class_to_idx, f, indent=4)
+
     # ========================
     # LOAD MODELS
     # ========================
@@ -55,7 +59,7 @@ def main():
     def load_shufflenet():
         model = models.shufflenet_v2_x1_0(weights=None)
         model.fc = nn.Linear(model.fc.in_features, num_classes)
-        model.load_state_dict(torch.load(CHECKPOINT_DIR / "shufflenet_tomato.pth", map_location=device))
+        model.load_state_dict(torch.load(CHECKPOINT_DIR / "shufflenet_v2_tomato.pth", map_location=device))
         return model.to(device).eval()
 
     resnet = load_resnet()
