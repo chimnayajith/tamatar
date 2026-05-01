@@ -18,8 +18,9 @@ from sklearn.neighbors import KNeighborsClassifier
 # =========================================================
 # LOAD DATA
 # =========================================================
-features_path = Path(__file__).resolve().parent / "combined_features.npy"
-labels_path   = Path(__file__).resolve().parent / "labels.npy"
+features_dir = Path(__file__).resolve().parents[1] / "features"
+features_path = features_dir / "combined_features.npy"
+labels_path   = features_dir / "labels.npy"
 
 X_raw = np.load(str(features_path))
 y_raw = np.load(str(labels_path))
@@ -117,7 +118,8 @@ classifiers = {
 
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-output_dir = Path(__file__).resolve().parent
+output_dir = features_dir
+output_dir.mkdir(parents=True, exist_ok=True)
 all_results = {}
 
 # =========================================================
