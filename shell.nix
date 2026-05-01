@@ -9,10 +9,11 @@ pkgs.mkShell {
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
     stdenv.cc.cc
+    zlib
   ];
 
   shellHook = ''
-    export LD_LIBRARY_PATH=/run/opengl-driver/lib:${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=/run/opengl-driver/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib:$LD_LIBRARY_PATH
 
     echo "Node.js development environment loaded"
     echo "Node version: $(node --version)"
