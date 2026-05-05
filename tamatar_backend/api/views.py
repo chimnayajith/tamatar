@@ -69,25 +69,15 @@ def predict(request):
     file_path = default_storage.save(os.path.join('temp', safe_name), image)
 
     try:
-        try:
-            public_url = default_storage.url(file_path)
-        except Exception:
-            public_url = None
-
         full_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
         try:
-            prediction = predict_image(full_path)
+            response_data = predict_image(full_path)
         except Exception as e:
             return Response(
                 {"error": "Internal server error while processing image"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
-        response_data = {
-            "file_path": file_path,
-            "prediction": prediction
-        }
 
         return Response(response_data, status=status.HTTP_200_OK)
     finally:

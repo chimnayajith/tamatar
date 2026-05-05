@@ -46,7 +46,14 @@ def predict_image(image_path):
     features = scaler.transform([features])
 
     pred = classifier.predict(features)[0]
-
+    
+    probs = classifier.predict_proba(features)[0]
+    confidence = float(np.max(probs))
+    
     label = idx_to_class[pred]
 
-    return label
+    return {
+        "prediction": label,
+        "confidence": confidence,
+        "class_index": int(pred)
+    }
