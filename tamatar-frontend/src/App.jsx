@@ -106,6 +106,7 @@ function App() {
           <ImageUpload
             onImageSelect={handleImageSelect}
             image={selectedImage}
+            loading={loading}
             onClear={handleReset}
           />
 

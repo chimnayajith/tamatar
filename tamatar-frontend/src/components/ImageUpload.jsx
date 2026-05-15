@@ -5,7 +5,7 @@ import fileIcon from "../assets/file.svg";
 import cameraIcon from "../assets/camera.svg";
 import closeIcon from "../assets/close.svg";
 
-const ImageUpload = ({ onImageSelect, image, onClear }) => {
+const ImageUpload = ({ onImageSelect, image, onClear, loading = false }) => {
   const fileRef = useRef(null);
   const cameraRef = useRef(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -67,33 +67,36 @@ const ImageUpload = ({ onImageSelect, image, onClear }) => {
             />
           </div>
 
-          <div className="preview-actions">
-            <button
-              className="btn primary"
-              onClick={() => {
-                if (fileRef.current) {
-                  fileRef.current.value = "";
-                  fileRef.current.click();
-                }
-              }}
-            >
-              <img src={fileIcon} alt="file" className="btn-icon" />
-              Re-upload
-            </button>
+          {/* hide action buttons while loading to prevent changing image during analysis */}
+          {!loading && (
+            <div className="preview-actions">
+              <button
+                className="btn primary"
+                onClick={() => {
+                  if (fileRef.current) {
+                    fileRef.current.value = "";
+                    fileRef.current.click();
+                  }
+                }}
+              >
+                <img src={fileIcon} alt="file" className="btn-icon" />
+                Re-upload
+              </button>
 
-            <button
-              className="btn secondary"
-              onClick={() => {
-                if (cameraRef.current) {
-                  cameraRef.current.value = "";
-                  cameraRef.current.click();
-                }
-              }}
-            >
-              <img src={cameraIcon} alt="camera" className="btn-icon" />
-              Retake Photo
-            </button>
-          </div>
+              <button
+                className="btn secondary"
+                onClick={() => {
+                  if (cameraRef.current) {
+                    cameraRef.current.value = "";
+                    cameraRef.current.click();
+                  }
+                }}
+              >
+                <img src={cameraIcon} alt="camera" className="btn-icon" />
+                Retake Photo
+              </button>
+            </div>
+          )}
 
         </div>
       ) : (
