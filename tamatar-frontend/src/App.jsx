@@ -107,6 +107,7 @@ function App() {
             onImageSelect={handleImageSelect}
             image={selectedImage}
             loading={loading}
+            showActions={!result}
             onClear={handleReset}
           />
 

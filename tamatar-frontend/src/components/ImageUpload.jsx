@@ -5,7 +5,7 @@ import fileIcon from "../assets/file.svg";
 import cameraIcon from "../assets/camera.svg";
 import closeIcon from "../assets/close.svg";
 
-const ImageUpload = ({ onImageSelect, image, onClear, loading = false }) => {
+const ImageUpload = ({ onImageSelect, image, onClear, loading = false, showActions = true }) => {
   const fileRef = useRef(null);
   const cameraRef = useRef(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -68,7 +68,7 @@ const ImageUpload = ({ onImageSelect, image, onClear, loading = false }) => {
           </div>
 
           {/* hide action buttons while loading to prevent changing image during analysis */}
-          {!loading && (
+          {!loading && showActions && (
             <div className="preview-actions">
               <button
                 className="btn primary"
