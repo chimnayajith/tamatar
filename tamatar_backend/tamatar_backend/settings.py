@@ -26,14 +26,15 @@ MEDIA_URL = '/media/'
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-9fy&2=kqcnk_he98s4i9-nqdjxv^$e2)_gher1(w)*te)29v2&')
 
 # SECURITY: default to False in production; set DEBUG=True locally via env var if needed
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True
 
 # Hosts and CSRF trusted origins can be provided via environment variables (comma-separated)
-ALLOWED_HOSTS = [h for h in os.environ.get('ALLOWED_HOSTS', '*').split(',') if h]
-CSRF_TRUSTED_ORIGINS = [u for u in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if u]
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = []
 
 # CORS: keep existing setting but prefer configuring allowed origins in production
-CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
+# CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
+CORS_ALLOW_ALL_ORIGINS=True
 
 # Application definition
 INSTALLED_APPS = [
